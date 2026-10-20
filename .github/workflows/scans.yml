@@ -34,8 +34,8 @@ jobs:
           cp "$f" /tmp/codeql-${{ matrix.language }}.sarif
           git config user.name scan-bot; git config user.email scan-bot@users.noreply.github.com
           for i in 1 2 3 4 5; do
-            git fetch origin scan-results && git checkout -f -B scan-results origin/scan-results || git checkout -f --orphan scan-results
-            git rm -rf --cached . -q || true
+            if git fetch origin scan-results; then git checkout -f -B scan-results origin/scan-results
+            else git checkout -f --orphan scan-results; git rm -rf --cached -q .; fi
             cp /tmp/codeql-${{ matrix.language }}.sarif .
             git add codeql-${{ matrix.language }}.sarif
             git commit -m "CodeQL ${{ matrix.language }} SARIF" && git push origin scan-results && break
